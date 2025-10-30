@@ -1,3 +1,76 @@
+function AvatarTile({
+  src,
+  alt,
+  className = "",
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`relative rounded-[28px] bg-[#E9F5A8] p-2 shadow-[0_28px_60px_rgba(0,0,0,.25)] ${className}`}
+    >
+      <div className="h-full w-full overflow-hidden rounded-[24px]">
+        <img src={src} alt={alt} className="h-full w-full object-cover" />
+      </div>
+    </div>
+  );
+}
+
+function ProfileBadge({
+  avatar,
+  name,
+  title,
+  sub,
+  className = "",
+}: {
+  avatar: string;
+  name: string;
+  title: string;
+  sub?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`absolute z-30 flex items-center gap-3 rounded-2xl border border-black/10 bg-white px-4 py-3 shadow-[0_18px_40px_rgba(0,0,0,.18)] ${className}`}
+    >
+      <div className="size-10 overflow-hidden rounded-full border border-black/10">
+        <img src={avatar} alt="" className="size-full object-cover" />
+      </div>
+      <div className="leading-tight">
+        <div className="font-semibold text-neutral-900">{name}</div>
+        <div className="text-xs text-neutral-500 -mt-0.5">{title}</div>
+        {sub && (
+          <div className="mt-0.5 text-[10px] text-neutral-400">{sub}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DashedPath({ d, className = "" }: { d: string; className?: string }) {
+  return (
+    <svg
+      className={`pointer-events-none absolute ${className}`}
+      viewBox="0 0 800 600"
+      preserveAspectRatio="none"
+    >
+      <path
+        d={d}
+        fill="none"
+        stroke="#0A0A0A"
+        strokeOpacity="0.6"
+        strokeWidth="2"
+        strokeDasharray="6 10"
+        strokeLinecap="round"
+      />
+      <circle cx="360" cy="250" r="4" fill="#0A0A0A" />
+      <circle cx="520" cy="380" r="4" fill="#0A0A0A" />
+    </svg>
+  );
+}
+
 export default function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
