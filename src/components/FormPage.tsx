@@ -54,11 +54,18 @@ export default function FormPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-mono">
-      {/* Custom Header */}
+      {/* Custom White Header */}
       <div className="w-full bg-white border-b border-brand-line flex items-center justify-between h-16 px-6">
         <img src={logo} alt="Logo" className="h-7 w-7" />
         <div className="ml-auto font-mono font-bold text-xs tracking-wider">LOG IN</div>
       </div>
+      {/* Blue Hero Section */}
+      <section className="w-full bg-brand-blue text-white text-center py-8 px-2 border-b border-brand-blue">
+        <h1 className="font-bold text-3xl md:text-4xl tracking-tight mb-4">THE STUDENT REPO BY REACH CAPITAL</h1>
+        <div className="max-w-3xl mx-auto text-base md:text-sm font-normal md:font-medium">
+          Reach Capital invests in early-stage founders redefining how we learn, live, and work. Our portfolio of 130+ startups are constantly on the lookout for talented builders like you. Share what you’re studying, building, or exploring, and we’ll connect you with career-defining opportunities.
+        </div>
+      </section>
       {/* Form Card */}
       <div className="flex-1 flex flex-col items-center justify-center py-8 bg-transparent">
         <form className="w-full max-w-2xl bg-white p-8 border border-brand-line rounded-xl shadow mx-auto space-y-6 font-mono">
