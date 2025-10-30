@@ -79,10 +79,11 @@ export default function App() {
   return (
     <>
       <NavBar />
-      <main className={"font-mono"}>
+      <main className="font-mono">
         <Hero />
 
         <Section
+          id="about"
           eyebrow=""
           title="WHAT HAPPENS WHEN YOU DROP YOUR PROFILE?"
           copy="Built for you. Curated by us. Shared directly with 130+ startups in our portfolio."
@@ -91,7 +92,7 @@ export default function App() {
         </Section>
 
         <Section
-          id=""
+          id="partners"
           eyebrow=""
           title="COMPANIES HIRING IN OUR PORTFOLIO"
           copy="Create a profile that highlights projects, skills, and interests—then opt into opportunities that fit you."
@@ -105,7 +106,7 @@ export default function App() {
         </Section>
 
         <Section
-          id="blue"
+          id="newsletter"
           eyebrow=""
           title="STAY IN THE LOOP"
           copy="Get the latest opportunities, success stories, and community updates across learning, work and health delivered straight to your inbox."

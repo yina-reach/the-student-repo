@@ -29,6 +29,9 @@ module.exports = {
       borderRadius: {
         xl2: "1.25rem",
       },
+      fontSize: {
+        base: ["18px", { lineHeight: "1.6" }],
+      },
     },
   },
   plugins: [],

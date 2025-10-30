@@ -1,17 +1,15 @@
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section id="home" className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">
         {/* soft lime glow */}
         <div className="absolute left-1/2 top-[-10%] h-[450px] w-[450px] -translate-x-1/2 rounded-full bg-brand-blue/10 blur-3xl" />
       </div>
-
       <div className="container-tight grid gap-8 py-16 md:grid-cols-2 md:py-24">
         <div className="flex flex-col items-start justify-center">
           <h1 className="mb-5 font-mono text-4xl font-bold tracking-tight md:text-5xl">
             JOIN THE STUDENT REPO
           </h1>
-
           <p className="mb-8 max-w-prose text-brand-text">
             Reach Capital invests in early-stage founders redefining how we
             learn, live, and work. Our portfolio of 130+ startups are constantly
@@ -19,7 +17,6 @@ export default function Hero() {
             studying, building, or exploring, and we'll connect you with
             career-defining opportunities.
           </p>
-
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="#get-started"
@@ -37,7 +34,6 @@ export default function Hero() {
         {/*
         <div className="relative">
           <div className="rounded-2xl border border-brand-line bg-gradient-to-b from-[#12151C] to-[#0B0D12] p-4 shadow-soft">
-            
             <div className="rounded-xl border border-brand-line bg-brand-bg p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="font-mono text-sm text-brand-sub">/Search</div>
@@ -87,7 +83,6 @@ export default function Hero() {
               </div>
             </div>
           </div>
-        
         </div>
         */}
       </div>
