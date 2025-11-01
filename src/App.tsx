@@ -6,6 +6,7 @@ import FAQ from "./components/faq";
 import FeatureGrid from "./components/FeatureGrid";
 import { Link, Routes, Route } from "react-router-dom";
 import FormPage from "./components/FormPage";
+import CompaniesHiringSection from "./components/CompaniesHiringSection";
 
 function Section(props: {
   id?: string;
@@ -94,19 +95,9 @@ export default function App() {
               >
                 <FeatureGrid />
               </Section>
-              <Section
-                id=""
-                eyebrow=""
-                title="COMPANIES HIRING IN OUR PORTFOLIO"
-                copy="Create a profile that highlights projects, skills, and interests—then opt into opportunities that fit you."
-              >
-                <TwoColumns
-                  leftTitle="Own your profile"
-                  leftBody="Edit anytime, highlight projects and skills, and control what’s shared with partner companies."
-                  rightTitle="Precision filters"
-                  rightBody="Companies find you by stack, interests, and availability—so every conversation is higher-signal."
-                />
-              </Section>
+
+              <CompaniesHiringSection />
+
               <Section
                 id="blue"
                 eyebrow=""
