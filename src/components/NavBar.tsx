@@ -46,7 +46,9 @@ export default function NavBar({ activeTab, onChangeTab }: NavBarProps) {
           </div>
         )}
 
-        {isStudentPortal && <TabStudent />}
+        {isStudentPortal && (
+          <TabStudent active={activeTab} onChange={onChangeTab} />
+        )}
 
         {isBusinessPortal && (
           <TabBusiness active={activeTab} onChange={onChangeTab} />
@@ -78,6 +80,12 @@ export default function NavBar({ activeTab, onChangeTab }: NavBarProps) {
               </button>
             </>
           )}
+          <Link
+            className="rounded-lg bg-brand-blue px-3 py-1.5 text-sm text-white hover:brightness-95"
+            to="/form"
+          >
+            SUBMIT YOUR PROFILE
+          </Link>
         </div>
       </nav>
     </header>

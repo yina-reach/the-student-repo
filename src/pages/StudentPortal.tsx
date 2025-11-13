@@ -1,19 +1,38 @@
+import { useState } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
-import TabStudent from "../components/TabStudent";
+import type { TabKey } from "../components/TabStudent";
 
 export default function StudentPortal() {
+  const [activeTab, setActiveTab] = useState<TabKey>("businesses");
+
   return (
     <div className="bg-white">
-      <NavBar />
-      <div className="min-h-[70vh] flex flex-col items-center justify">
-        <h1 className="font-bold text-2xl md:text-3xl mb-4 font-mono">
-          WELCOME [STUDENT NAME]!
-        </h1>
-        <div className="w-full flex justify-center">
-          <TabStudent />
-        </div>
+      <NavBar activeTab={activeTab} onChangeTab={setActiveTab} />
+
+      <div className="min-h-[70vh] max-w-5xl mx-auto px-4 mt-10">
+        {activeTab === "businesses" && (
+          <div>
+            <h1 className="text-xl font-semibold">Students</h1>
+            <p>Students tab content here.</p>
+          </div>
+        )}
+
+        {activeTab === "shortlist" && (
+          <div>
+            <h1 className="text-xl font-semibold">Shortlist</h1>
+            <p>Content for the SHORTLIST tab goes here.</p>
+          </div>
+        )}
+
+        {activeTab === "edit-profile" && (
+          <div>
+            <h1 className="text-xl font-semibold">Messages</h1>
+            <p>Content for the MESSAGES tab goes here.</p>
+          </div>
+        )}
       </div>
+
       <Footer />
     </div>
   );

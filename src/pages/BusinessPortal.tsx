@@ -3,6 +3,7 @@ import { useState } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import type { TabKey } from "../components/TabBusiness";
+import StudentsSubtabs from "../components/StudentSubtabs";
 
 export default function BusinessPortal() {
   const [activeTab, setActiveTab] = useState<TabKey>("students");
@@ -15,7 +16,7 @@ export default function BusinessPortal() {
         {activeTab === "students" && (
           <div>
             <h1 className="text-xl font-semibold">Students</h1>
-            <p>Students tab content here.</p>
+            <StudentsSubtabs />
           </div>
         )}
 
