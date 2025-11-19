@@ -1,20 +1,30 @@
 import { Link } from "react-router-dom";
+import steveJobsLarge from "../assets/stevejobs.webp";
+
 function AvatarTile({
-  src,
-  alt,
+  src,             // transparent PNG/SVG cutout
+  alt = "",
   className = "",
 }: {
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
   className?: string;
 }) {
   return (
     <div
-      className={`relative rounded-[28px] bg-[#E9F5A8] p-2 shadow-[0_28px_60px_rgba(0,0,0,.25)] ${className}`}
+      className={`absolute w-[206px] h-[196px] rounded-[20px] bg-[#E6FF8A] border border-[#1E2015] overflow-hidden shadow-[0_14px_16px_rgba(0,0,0,0.7)] ${className}`}
     >
-      <div className="h-full w-full overflow-hidden rounded-[24px]">
-        <img src={src} alt={alt} className="h-full w-full object-cover" />
-      </div>
+      {/* base lime square (decorative) */}
+      <div aria-hidden className="absolute inset-0 rounded-[20px]" />
+
+      {/* overlay photo with transparent background */}
+      {src && (
+        <img
+          src={src}
+          alt={alt}
+          className="absolute inset-0 h-full w-full object-contain p-3"
+        />
+      )}
     </div>
   );
 }
@@ -76,11 +86,10 @@ export default function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        {/* soft lime glow */}
         <div className="absolute left-1/2 top-[-10%] h-[450px] w-[450px] -translate-x-1/2 rounded-full bg-brand-blue blur-3xl" />
       </div>
-      <div className="container-tight grid gap-8 py-16 md:grid-cols-2 md:py-24">
-        <div className="flex flex-col items-start justify-center">
+      <div className="container-tight grid items-center gap-y-10 gap-x-12 py-16 md:grid-cols-[minmax(0,1fr)_560px] md:py-24">
+      <div className="flex flex-col items-start justify-center">
           <h1 className="mb-5 font-mono text-4xl font-bold tracking-tight md:text-5xl">
             JOIN THE STUDENT REPO
           </h1>
@@ -105,60 +114,63 @@ export default function Hero() {
             </p>
           </div>
         </div>
-        {/*
-        <div className="relative">
-          <div className="rounded-2xl border border-brand-line bg-gradient-to-b from-[#12151C] to-[#0B0D12] p-4 shadow-soft">
-            <div className="rounded-xl border border-brand-line bg-brand-bg p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="font-mono text-sm text-brand-sub">/Search</div>
-                <div className="flex gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-brand-lime/70" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-brand-sub/40" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-brand-sub/40" />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-3 rounded-lg border border-brand-line/60 p-3">
-                  <div className="text-xs uppercase tracking-wide text-brand-sub">
-                    Filter
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-2 text-sm">
-                    {[
-                      "Role: SWE",
-                      "Experience: 1-2y",
-                      "Location: Remote",
-                      "Stack: React",
-                    ].map((chip) => (
-                      <span
-                        key={chip}
-                        className="rounded-md bg-brand-blue px-2 py-1 text-brand-text/90 ring-1 ring-brand-line"
-                      >
-                        {chip}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div
-                    key={i}
-                    className="rounded-lg border border-brand-line/60 p-3 hover:border-brand-lime/50"
-                  >
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="font-semibold">Candidate #{i}</span>
-                      <span className="rounded-md bg-brand-lime/15 px-2 py-0.5 text-xs text-brand-lime ring-1 ring-brand-lime/40">
-                        Match {76 + i}%
-                      </span>
-                    </div>
-                    <p className="text-sm text-brand-sub">
-                      React • TypeScript • Postgres
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* RIGHT SIDE GRAPHIC STACK */}
+          <div className="relative h-[560px] md:h-[620px]">
+            <img
+                src={steveJobsLarge}
+                className="
+                  absolute
+                  right-[200px]  
+                  top-[70px]     
+                  h-[236px]
+                  w-[206px]
+                  object-cover
+                  rounded-b-[20px]
+                  pointer-events-none
+                  z-20
+                "
+                alt=""
+              />
+            <AvatarTile
+              // src={steveJobsLarge}
+              className="
+                right-[200px]
+                top-[110px]"
+            />
+            
+            <ProfileBadge
+              avatar="/img/steve-thumb.jpg"
+              name="Steve Jobs"
+              title="Entrepreneur"
+              sub="write something here"
+              className="
+                right-[30px] 
+                top-[200px]"
+            />
+            {/* <AvatarTile
+              src="/img/steve-mid.jpg"
+              className="absolute left-[12%] top-[48%] h-[120px] w-[320px] -translate-y-1/2 md:left-[8%] md:h-[130px] md:w-[340px]"
+            /> */}
+            {/* <ProfileBadge
+              avatar="/img/steve-thumb.jpg"
+              name="Steve Jobs"
+              title="Entrepreneur"
+              sub="write something here"
+              className="left-[16%] top-[46%] -translate-y-1/2 md:left-[12%]"
+            /> */}
+
+            <AvatarTile
+              // src="..assets/stevejobs.webp"
+              className="right-10 top-[350px]"
+            />
+            {/* <ProfileBadge
+              avatar="/img/melanie-thumb.jpg"
+              name="Melanie Perkins"
+              title="Entrepreneur"
+              sub="write something here"
+              className="right-[14%] bottom-[20%]"
+            /> */}
           </div>
-        </div>
-        */}
       </div>
     </section>
   );
