@@ -58,15 +58,31 @@ export default function ProjectCard({
         </p>
 
         {/* Tags */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center rounded-full border-brand-blue bg-opacity-10 bg-brand-blue text-brand-blue px-3 py-1 text-xs font-medium"
-            >
-              {tag}
-            </span>
-          ))}
+        <div className="mt-4 flex flex-nowrap gap-2">
+          {tags.length > 5 ? (
+            <>
+              {tags.slice(0, 4).map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center rounded-full border-brand-blue bg-opacity-10 bg-brand-blue text-brand-blue px-3 py-1 text-xs font-medium whitespace-nowrap flex-shrink-0"
+                >
+                  {tag}
+                </span>
+              ))}
+              <span className="inline-flex items-center rounded-full border-brand-blue bg-opacity-10 bg-brand-blue text-brand-blue px-3 py-1 text-xs font-medium whitespace-nowrap flex-shrink-0">
+                +{tags.length - 4}
+              </span>
+            </>
+          ) : (
+            tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center rounded-full border-brand-blue bg-opacity-10 bg-brand-blue text-brand-blue px-3 py-1 text-xs font-medium whitespace-nowrap flex-shrink-0"
+              >
+                {tag}
+              </span>
+            ))
+          )}
         </div>
 
         {/* View project button */}
