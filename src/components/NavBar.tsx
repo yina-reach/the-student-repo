@@ -21,7 +21,11 @@ export default function NavBar({ tabs, activeTab, onChangeTab }: NavBarProps) {
   const isHome = pathname === "/";
   const isStudentPortal = pathname === "/student-portal";
   const isBusinessPortal = pathname === "/business-portal";
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
+
+  console.log("NavBar render - user:", user);
+  console.log("NavBar render - loading:", loading);
+  console.log("NavBar render - pathname:", pathname);
 
   const studentTabs: TabConfig<StudentTabKey>[] = [
     { key: "businesses", label: "BUSINESSES" },
@@ -47,6 +51,8 @@ export default function NavBar({ tabs, activeTab, onChangeTab }: NavBarProps) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (loading) return null;
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white border-brand-line/60 backdrop-blur">

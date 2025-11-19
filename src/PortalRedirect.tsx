@@ -17,7 +17,6 @@ export default function PortalRedirect() {
 
     // Only auto-redirect away from landing/login/callback
     if (
-      pathname === "/" ||
       pathname === "/login" ||
       pathname === "/auth/callback"
     ) {

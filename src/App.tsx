@@ -10,6 +10,7 @@ import CompaniesHiringSection from "./components/CompaniesHiringSection";
 import LoginPage from "./pages/LoginPage";
 import SubmittedPage from "./pages/SubmittedPage";
 import AuthCallback from "./AuthCallback";
+import { AuthProvider } from "./AuthContext";
 import BusinessPortal from "./pages/BusinessPortal";
 import RCPortal from "./pages/RCPortal";
 import StudentRedirectGate from "./components/StudentRedirectGate";
@@ -49,69 +50,71 @@ function Section(props: {
 
 export default function App() {
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <>
-            <NavBar />
-            <main className="font-sans bg-white">
-              <Hero />
-              <Section
-                id="about"
-                eyebrow=""
-                title="WHAT HAPPENS WHEN YOU DROP YOUR PROFILE?"
-                copy="Built for you. Curated by us. Shared directly with 130+ startups in our portfolio."
-              >
-                <FeatureGrid />
-              </Section>
-
-              <CompaniesHiringSection />
-
-              <Section
-                id="newsletter"
-                eyebrow=""
-                title="STAY IN THE LOOP"
-                copy="Get the latest opportunities, success stories, and community updates across learning, work and health delivered straight to your inbox."
-              >
-                <a
-                  className="rounded-lg bg-brand-lime text-sm text-brand-blue hover:brightness-95 p-4"
-                  href="#get-started"
+    <AuthProvider>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <NavBar />
+              <main className="font-sans bg-white">
+                <Hero />
+                <Section
+                  id="about"
+                  eyebrow=""
+                  title="WHAT HAPPENS WHEN YOU DROP YOUR PROFILE?"
+                  copy="Built for you. Curated by us. Shared directly with 130+ startups in our portfolio."
                 >
-                  SUBSCRIBE TO THE REPO NEWSLETTER →
-                </a>
-              </Section>
-              <Section
-                id=""
-                eyebrow=""
-                title="CHALLENGE ACCEPTED?"
-                copy="Join hundreds of technical students building careers with innovative companies."
-              >
-                <Link
-                  className="rounded-lg bg-brand-blue text-sm text-white hover:brightness-95 p-4"
-                  to="/form"
+                  <FeatureGrid />
+                </Section>
+
+                <CompaniesHiringSection />
+
+                <Section
+                  id="newsletter"
+                  eyebrow=""
+                  title="STAY IN THE LOOP"
+                  copy="Get the latest opportunities, success stories, and community updates across learning, work and health delivered straight to your inbox."
                 >
-                  SUBMIT YOUR PROFILE
-                </Link>
-                <div className="mt-10">
-                  <p className="mt-3 text-center text-xs text-brand-sub">
-                    Free to join • No spam
-                  </p>
-                </div>
-              </Section>
-              <FAQ />
-            </main>
-            <Footer />
-          </>
-        }
-      />
-      <Route path="/form" element={<FormPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/submitted" element={<SubmittedPage />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/student-portal" element={<StudentRedirectGate />} />
-      <Route path="/business-portal" element={<BusinessPortal />} />
-      <Route path="/admin-portal" element={<RCPortal />} />
-    </Routes>
+                  <a
+                    className="rounded-lg bg-brand-lime text-sm text-brand-blue hover:brightness-95 p-4"
+                    href="#get-started"
+                  >
+                    SUBSCRIBE TO THE REPO NEWSLETTER →
+                  </a>
+                </Section>
+                <Section
+                  id=""
+                  eyebrow=""
+                  title="CHALLENGE ACCEPTED?"
+                  copy="Join hundreds of technical students building careers with innovative companies."
+                >
+                  <Link
+                    className="rounded-lg bg-brand-blue text-sm text-white hover:brightness-95 p-4"
+                    to="/form"
+                  >
+                    SUBMIT YOUR PROFILE
+                  </Link>
+                  <div className="mt-10">
+                    <p className="mt-3 text-center text-xs text-brand-sub">
+                      Free to join • No spam
+                    </p>
+                  </div>
+                </Section>
+                <FAQ />
+              </main>
+              <Footer />
+            </>
+          }
+        />
+        <Route path="/form" element={<FormPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/submitted" element={<SubmittedPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/student-portal" element={<StudentRedirectGate />} />
+        <Route path="/business-portal" element={<BusinessPortal />} />
+        <Route path="/admin-portal" element={<RCPortal />} />
+      </Routes>
+    </AuthProvider>
   );
 }
