@@ -10,6 +10,17 @@ import MessagesSection from "../components/ConversationComponent";
 import { supabase } from "../supabase";
 import { useAuth } from "../useAuth";
 
+interface HumbleFlexSubmission {
+  id: string;
+  first_name: string;
+  last_name: string;
+  school: string;
+  graduation_year: string;
+  flex: string;
+  skills: string[];
+  email: string;
+}
+
 type Project = {
   id: string;
   title: string;
@@ -38,6 +49,10 @@ export default function BusinessPortal() {
   const [activeSubtab, setActiveSubtab] = useState<SubtabKey>("humble");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [profilesCount, setProfilesCount] = useState<number | null>(null);
+  const [humbleFlexSubmissions, setHumbleFlexSubmissions] = useState<
+    HumbleFlexSubmission[]
+  >([]);
+  const [loadingFlex, setLoadingFlex] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [initialConversationId, setInitialConversationId] = useState<
@@ -81,10 +96,12 @@ export default function BusinessPortal() {
 
       const authorName = `${submission.first_name} ${submission.last_name}`;
       const graduationYear = submission.graduation_year?.slice(-2) || "";
-      const authorSchool = `${submission.school}${graduationYear ? ` '${graduationYear}` : ""}`;
+      const authorSchool = `${submission.school}${
+        graduationYear ? ` '${graduationYear}` : ""
+      }`;
 
       const projectText = submission.side_projects.trim();
-      
+
       // Try to extract URL from text (look for http/https links)
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = projectText.match(urlRegex) || [];
@@ -94,7 +111,7 @@ export default function BusinessPortal() {
       let description = projectText.replace(urlRegex, "").trim();
 
       // Try to extract title (first line if it's short, otherwise use default)
-      const lines = description.split("\n").filter(line => line.trim());
+      const lines = description.split("\n").filter((line) => line.trim());
       let title = "Side Project";
       let finalDescription = description;
 
@@ -110,9 +127,10 @@ export default function BusinessPortal() {
       }
 
       // Use skills as tags, or extract from description if no skills
-      const tags = submission.skills && submission.skills.length > 0 
-        ? submission.skills 
-        : [];
+      const tags =
+        submission.skills && submission.skills.length > 0
+          ? submission.skills
+          : [];
 
       parsedProjects.push({
         id: `${submission.id}-project`,
@@ -147,6 +165,44 @@ export default function BusinessPortal() {
   }, []);
 
   useEffect(() => {
+    if (activeSubtab !== "humble") return;
+
+    const loadHumbleFlex = async () => {
+      setLoadingFlex(true);
+      try {
+        let query = supabase
+          .from("submissions")
+          .select(
+            "id, first_name, last_name, school, graduation_year, flex, skills, email"
+          )
+          .not("flex", "is", null)
+          .neq("flex", "");
+
+        if (sortOrder === "asc") {
+          query = query.order("last_name", { ascending: false });
+        } else {
+          query = query.order("last_name", { ascending: true });
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error("Error loading humble flex submissions", error);
+          return;
+        }
+
+        setHumbleFlexSubmissions((data as HumbleFlexSubmission[]) || []);
+      } catch (err) {
+        console.error("Unexpected error", err);
+      } finally {
+        setLoadingFlex(false);
+      }
+    };
+
+    loadHumbleFlex();
+  }, [activeSubtab, sortOrder]);
+
+  useEffect(() => {
     const loadProjects = async () => {
       if (activeSubtab !== "projects") {
         setProjects([]);
@@ -157,7 +213,9 @@ export default function BusinessPortal() {
       try {
         const { data, error } = await supabase
           .from("submissions")
-          .select("id, first_name, last_name, school, graduation_year, side_projects, skills, github")
+          .select(
+            "id, first_name, last_name, school, graduation_year, side_projects, skills, github"
+          )
           .not("side_projects", "is", null)
           .neq("side_projects", "");
 
@@ -189,7 +247,7 @@ export default function BusinessPortal() {
 
         const parsed = parseProjects(data as SubmissionRow[]);
         console.log("Parsed projects:", parsed);
-        
+
         // Sort projects
         const sorted = [...parsed].sort((a, b) => {
           if (sortOrder === "asc") {
@@ -254,17 +312,15 @@ export default function BusinessPortal() {
               </div>
               <div className="flex justify-between mt-4">
                 <div className="text-gray-400">
-                  {activeSubtab === "projects" ? (
-                    projectsLoading ? (
-                      "Loading projects…"
-                    ) : (
-                      `${projects.length} ${projects.length === 1 ? "project" : "projects"}`
-                    )
-                  ) : profilesCount === null ? (
-                    "Loading profiles…"
-                  ) : (
-                    `${profilesCount} profiles`
-                  )}
+                  {activeSubtab === "projects"
+                    ? projectsLoading
+                      ? "Loading projects…"
+                      : `${projects.length} ${
+                          projects.length === 1 ? "project" : "projects"
+                        }`
+                    : profilesCount === null
+                    ? "Loading profiles…"
+                    : `${profilesCount} profiles`}
                 </div>
 
                 <div className="flex items-center justify-end gap-4 mb-4">
@@ -299,12 +355,37 @@ export default function BusinessPortal() {
               </div>
               {activeSubtab === "humble" && (
                 <div className="flex items-center justify-center">
-                  <FlexComponent
-                    authorName="Sarah Chen"
-                    authorSchool="MIT ’25"
-                    studentId="some-student-id"
-                    onStartConversation={handleStartConversation}
-                  />
+                  {loadingFlex ? (
+                    <p className="text-gray-500 py-10">
+                      Loading humble flex posts...
+                    </p>
+                  ) : humbleFlexSubmissions.length === 0 ? (
+                    <p className="text-gray-500 py-10">
+                      No humble flex posts yet.
+                    </p>
+                  ) : (
+                    <div className="space-y-6">
+                      {humbleFlexSubmissions.map((submission) => {
+                        const authorName = `${submission.first_name} ${submission.last_name}`;
+                        const authorSchool = `${submission.school} '${
+                          submission.graduation_year?.slice(-2) || ""
+                        }`;
+                        const studentId = submission.email;
+
+                        return (
+                          <FlexComponent
+                            key={submission.id}
+                            authorName={authorName}
+                            authorSchool={authorSchool}
+                            flexContent={submission.flex}
+                            skills={submission.skills || []}
+                            studentId={studentId}
+                            onStartConversation={handleStartConversation}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
               {activeSubtab === "projects" && (
