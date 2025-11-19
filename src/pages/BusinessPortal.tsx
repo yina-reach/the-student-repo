@@ -10,11 +10,24 @@ import MessagesSection from "../components/ConversationComponent";
 import { supabase } from "../supabase";
 import { useAuth } from "../useAuth";
 
+interface HumbleFlexSubmission {
+  id: string;
+  first_name: string;
+  last_name: string;
+  school: string;
+  graduation_year: string;
+  flex: string;
+  skills: string[];
+  email: string;
+}
+
 export default function BusinessPortal() {
   const [activeTab, setActiveTab] = useState<TabKey>("students");
   const [activeSubtab, setActiveSubtab] = useState<SubtabKey>("humble");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [profilesCount, setProfilesCount] = useState<number | null>(null);
+  const [humbleFlexSubmissions, setHumbleFlexSubmissions] = useState<HumbleFlexSubmission[]>([]);
+  const [loadingFlex, setLoadingFlex] = useState(false);
   const [initialConversationId, setInitialConversationId] = useState<
     string | null
   >(null);
@@ -61,6 +74,42 @@ export default function BusinessPortal() {
 
     loadCount();
   }, []);
+
+  useEffect(() => {
+    if (activeSubtab !== "humble") return;
+
+    const loadHumbleFlex = async () => {
+      setLoadingFlex(true);
+      try {
+        let query = supabase
+          .from("submissions")
+          .select("id, first_name, last_name, school, graduation_year, flex, skills, email")
+          .not("flex", "is", null)
+          .neq("flex", "");
+
+        if (sortOrder === "asc") {
+          query = query.order("last_name", { ascending: false });
+        } else {
+          query = query.order("last_name", { ascending: true });
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error("Error loading humble flex submissions", error);
+          return;
+        }
+
+        setHumbleFlexSubmissions((data as HumbleFlexSubmission[]) || []);
+      } catch (err) {
+        console.error("Unexpected error", err);
+      } finally {
+        setLoadingFlex(false);
+      }
+    };
+
+    loadHumbleFlex();
+  }, [activeSubtab, sortOrder]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans">
@@ -142,12 +191,31 @@ export default function BusinessPortal() {
               </div>
               {activeSubtab === "humble" && (
                 <div className="flex items-center justify-center">
-                  <FlexComponent
-                    authorName="Sarah Chen"
-                    authorSchool="MIT ’25"
-                    studentId="some-student-id"
-                    onStartConversation={handleStartConversation}
-                  />
+                  {loadingFlex ? (
+                    <p className="text-gray-500 py-10">Loading humble flex posts...</p>
+                  ) : humbleFlexSubmissions.length === 0 ? (
+                    <p className="text-gray-500 py-10">No humble flex posts yet.</p>
+                  ) : (
+                    <div className="space-y-6">
+                      {humbleFlexSubmissions.map((submission) => {
+                        const authorName = `${submission.first_name} ${submission.last_name}`;
+                        const authorSchool = `${submission.school} '${submission.graduation_year?.slice(-2) || ""}`;
+                        const studentId = submission.email;
+
+                        return (
+                          <FlexComponent
+                            key={submission.id}
+                            authorName={authorName}
+                            authorSchool={authorSchool}
+                            flexContent={submission.flex}
+                            skills={submission.skills || []}
+                            studentId={studentId}
+                            onStartConversation={handleStartConversation}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
               {activeSubtab === "projects" && (

@@ -4,6 +4,8 @@ type FlexCardProps = {
   authorName: string;
   authorSchool: string;
   studentId: string;
+  flexContent?: string;
+  skills?: string[];
   onStartConversation?: (studentId: string) => void;
 };
 
@@ -11,20 +13,23 @@ export default function FlexComponent({
   authorName,
   authorSchool,
   studentId,
+  flexContent,
+  skills = [],
   onStartConversation,
 }: FlexCardProps) {
+  // Extract title from first line, rest as description
+  const lines = flexContent?.split("\n").filter((line) => line.trim()) || [];
+  const title = lines[0] || "Humble Flex";
+  const description = lines.slice(1).join("\n") || flexContent || "";
+
   return (
     <article className="max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       {/* Top: title + icons */}
       <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
-            Just shipped a real-time collaboration feature!
-          </h2>
-          <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-            Built a real-time document collaboration system using WebSockets and
-            CRDTs. Users can now edit together seamlessly with conflict-free
-            merging. Learned so much about distributed systems! 🚀
+          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          <p className="mt-2 text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+            {description}
           </p>
         </div>
 
@@ -91,12 +96,10 @@ export default function FlexComponent({
         </div>
 
         <div className="flex flex-wrap justify-end gap-2">
-          <Tag>React</Tag>
-          <Tag>TypeScript</Tag>
-          <Tag>Node.js</Tag>
-          <Tag>AWS</Tag>
-          <Tag>PostgreSQL</Tag>
-          <Tag variant="outline">+1</Tag>
+          {skills.slice(0, 5).map((skill, idx) => (
+            <Tag key={idx}>{skill}</Tag>
+          ))}
+          {skills.length > 5 && <Tag variant="outline">+{skills.length - 5}</Tag>}
         </div>
       </div>
     </article>
