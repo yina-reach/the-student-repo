@@ -5,6 +5,8 @@ type ProjectCardProps = {
   authorName: string;
   authorSchool: string;
   onViewProject?: () => void;
+  isShortlisted?: boolean;
+  onToggleShortlist?: () => void;
 };
 
 export default function ProjectCard({
@@ -14,6 +16,8 @@ export default function ProjectCard({
   authorName,
   authorSchool,
   onViewProject,
+  isShortlisted = false,
+  onToggleShortlist,
 }: ProjectCardProps) {
   return (
     <article className="max-w-xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -113,6 +117,29 @@ export default function ProjectCard({
               strokeLinejoin="round"
             >
               <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="rounded-full p-1.5 hover:bg-slate-100 disabled:opacity-50"
+            onClick={onToggleShortlist}
+            disabled={!onToggleShortlist}
+            aria-label={
+              isShortlisted ? "Remove project from shortlist" : "Add project to shortlist"
+            }
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill={isShortlisted ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-black"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>
         </div>

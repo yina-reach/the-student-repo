@@ -5,10 +5,11 @@ import type { TabKey } from "../tabTypes";
 import StudentsSubtabs, { SubtabKey } from "../components/StudentSubtabs";
 import FlexComponent from "../components/FlexComponent";
 import ProjectCard from "../components/ProjectComponent";
-import BiosSection from "../components/BioSection";
+import BiosSection, { sampleStudents }  from "../components/BioSection";
 import MessagesSection from "../components/ConversationComponent";
 import { supabase } from "../supabase";
 import { useAuth } from "../useAuth";
+
 
 type StudentProfile = {
   id: string;
@@ -26,6 +27,8 @@ export default function BusinessPortal() {
   >(null);
 
   const [shortlist, setShortlist] = useState<StudentProfile[]>([]);
+  const [shortlistedProjectIds, setShortlistedProjectIds] = useState<string[]>([]);
+  const [shortlistedBioIds, setShortlistedBioIds] = useState<string[]>([]);
 
   const { user } = useAuth();
   const sarahProfile: StudentProfile = {
@@ -45,8 +48,39 @@ export default function BusinessPortal() {
       return [...current, student];
     });
   };
+  const demoProjectId = "collabdocs-demo";
+
+  const demoProject = {
+    id: demoProjectId,
+    title: "CollabDocs",
+    description:
+      "Real-time collaborative document editing platform with WebSocket support. Real-time collaborative document editing platform with WebSocket support.",
+    tags: ["React", "WebSockets", "CRDTs", "Node.js"],
+    authorName: "Sarah Chen",
+    authorSchool: "MIT ’25",
+  };
 
 
+  const toggleProjectShortlist = (projectId: string) => {
+    setShortlistedProjectIds((current) =>
+      current.includes(projectId)
+        ? current.filter((id) => id !== projectId)
+        : [...current, projectId]
+    );
+  };
+
+  const toggleBioShortlist = (bioId: string) => {
+    setShortlistedBioIds((current) =>
+      current.includes(bioId)
+        ? current.filter((id) => id !== bioId)
+        : [...current, bioId]
+    );
+  };
+  const shortlistedBios = sampleStudents.filter((student) =>
+  shortlistedBioIds.includes(student.id)
+);
+
+  
   const handleStartConversation = async (studentId: string) => {
     if (!user) return; // not logged in
 
@@ -179,19 +213,28 @@ export default function BusinessPortal() {
                   />
                 </div>
               )}
+              
               {activeSubtab === "projects" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 mb-4">
                   <ProjectCard
-                    title="CollabDocs"
-                    description="Real-time collaborative document editing platform with WebSocket support. Real-time collaborative document editing platform with WebSocket support."
-                    tags={["React", "WebSockets", "CRDTs", "Node.js"]}
-                    authorName="Sarah Chen"
-                    authorSchool="MIT ’25"
+                    title={demoProject.title}
+                    description={demoProject.description}
+                    tags={demoProject.tags}
+                    authorName={demoProject.authorName}
+                    authorSchool={demoProject.authorSchool}
                     onViewProject={() => console.log("View project clicked")}
+                    isShortlisted={shortlistedProjectIds.includes(demoProjectId)}
+                    onToggleShortlist={() => toggleProjectShortlist(demoProjectId)}
                   />
                 </div>
               )}
-              {activeSubtab === "bios" && <BiosSection />}
+
+              {activeSubtab === "bios" && (
+              <BiosSection
+                shortlistedBioIds={shortlistedBioIds}
+                onToggleBioShortlist={toggleBioShortlist}
+              />
+            )}
             </>
           )}
 
@@ -199,24 +242,69 @@ export default function BusinessPortal() {
           <div>
             <h1 className="text-xl font-semibold mb-4">Shortlist</h1>
 
-            {shortlist.length === 0 ? (
+            {shortlist.length === 0 &&
+              shortlistedProjectIds.length === 0 &&
+              shortlistedBios.length === 0 ? (
               <p className="text-sm text-gray-500">
                 You haven&apos;t shortlisted any students yet. Click the flag icon on a
-                student profile to save it here.
+                student, project, or bio to save it here.
               </p>
             ) : (
-              <div className="space-y-4">
-                {shortlist.map((student) => (
-                  <FlexComponent
-                    key={student.id}
-                    authorName={student.name}
-                    authorSchool={student.school}
-                    studentId={student.id}
-                    onStartConversation={handleStartConversation}
-                    isShortlisted={true}
-                    onToggleShortlist={() => toggleShortlist(student)}
-                  />
-                ))}
+              <div className="space-y-10">
+                {/* Humble Flex */}
+                {shortlist.length > 0 && (
+                  <section>
+                    <h2 className="mb-3 text-sm font-semibold text-gray-500">
+                      Humble Flex
+                    </h2>
+                    <div className="space-y-4">
+                      {shortlist.map((student) => (
+                        <FlexComponent
+                          key={student.id}
+                          authorName={student.name}
+                          authorSchool={student.school}
+                          studentId={student.id}
+                          onStartConversation={handleStartConversation}
+                          isShortlisted={true}
+                          onToggleShortlist={() => toggleShortlist(student)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                
+                {/* Projects */}
+                  {shortlistedProjectIds.includes(demoProjectId) && (
+                    <section>
+                      <h2 className="mb-3 text-sm font-semibold text-gray-500">Projects</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <ProjectCard
+                          title={demoProject.title}
+                          description={demoProject.description}
+                          tags={demoProject.tags}
+                          authorName={demoProject.authorName}
+                          authorSchool={demoProject.authorSchool}
+                          onViewProject={() => console.log("View project clicked")}
+                          isShortlisted={true}
+                          onToggleShortlist={() => toggleProjectShortlist(demoProjectId)}
+                        />
+                      </div>
+                    </section>
+                  )}
+
+
+                {/* Bios */}
+                {shortlistedBios.length > 0 && (
+                  <section>
+                    <h2 className="mb-3 text-sm font-semibold text-gray-500">Bios</h2>
+                    <BiosSection
+                      students={shortlistedBios}
+                      shortlistedBioIds={shortlistedBioIds}
+                      onToggleBioShortlist={toggleBioShortlist}
+                    />
+                  </section>
+                )}
               </div>
             )}
           </div>

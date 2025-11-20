@@ -1,4 +1,4 @@
-interface Student {
+export interface Student {
   id: string;
   name: string;
   university: string;
@@ -11,8 +11,14 @@ interface Student {
   skills: string[];
 }
 
+type BiosSectionProps = {
+  students?: Student[];
+  shortlistedBioIds: string[];
+  onToggleBioShortlist: (bioId: string) => void;
+};
+
 // Sample data matching the image
-const sampleStudents: Student[] = [
+export const sampleStudents: Student[] = [
   {
     id: "1",
     name: "Alex Rivera",
@@ -70,71 +76,90 @@ const sampleStudents: Student[] = [
   },
 ];
 
-export default function BiosSection() {
+export default function BiosSection({
+  students = sampleStudents,
+  shortlistedBioIds,
+  onToggleBioShortlist,
+}: BiosSectionProps) {
   return (
     <div className="w-full font-inter">
       {/* Student Profile Cards */}
       <div className="space-y-6">
-        {sampleStudents.map((student) => (
-          <div
-            key={student.id}
-            className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
-          >
-            <div className="flex gap-4">
-              {/* Profile Picture */}
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-2xl font-semibold text-gray-500">
-                    {student.name.charAt(0)}
-                  </span>
-                </div>
-              </div>
+        {students.map((student) => {
+          const isShortlisted = shortlistedBioIds.includes(student.id);
 
-              {/* Main Content */}
-              <div className="flex-1">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {student.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {student.university} • {student.major}
-                    </p>
-                  </div>
-                  {/* Action Icons */}
-                  <div className="flex items-center gap-3">
-                    <button className="rounded-full p-1.5 hover:bg-slate-100">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-black"
-                      >
-                        <path d="M21 11.5c0 4-3.7 7.5-8.5 7.5-1.4 0-2.8-.3-4-.9L3 20l1.3-4.1C3.5 14.3 3 12.9 3 11.5 3 7 6.7 3.5 11.5 3.5S21 7 21 11.5z" />
-                      </svg>
-                    </button>
-
-                    <button className="rounded-full p-1.5 hover:bg-slate-100">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </button>
+          return (
+            <div
+              key={student.id}
+              className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex gap-4">
+                {/* Profile Picture */}
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-2xl font-semibold text-gray-500">
+                      {student.name.charAt(0)}
+                    </span>
                   </div>
                 </div>
+
+                {/* Main Content */}
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        {student.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {student.university} • {student.major}
+                      </p>
+                    </div>
+
+                    {/* Action Icons */}
+                    <div className="flex items-center gap-3">
+                      {/* Chat bubble */}
+                      <button className="rounded-full p-1.5 hover:bg-slate-100">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-black"
+                        >
+                          <path d="M21 11.5c0 4-3.7 7.5-8.5 7.5-1.4 0-2.8-.3-4-.9L3 20l1.3-4.1C3.5 14.3 3 12.9 3 11.5 3 7 6.7 3.5 11.5 3.5S21 7 21 11.5z" />
+                        </svg>
+                      </button>
+
+                      {/* Bookmark / save */}
+                      <button
+                        className="rounded-full p-1.5 hover:bg-slate-100 disabled:opacity-50"
+                        onClick={() => onToggleBioShortlist(student.id)}
+                        aria-label={
+                          isShortlisted
+                            ? "Remove bio from shortlist"
+                            : "Add bio to shortlist"
+                        }
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill={isShortlisted ? "currentColor" : "none"}
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
 
                 {/* Bio */}
                 <p className="text-sm text-gray-700 mb-4">{student.bio}</p>
@@ -242,14 +267,15 @@ export default function BiosSection() {
                       key={idx}
                       className="px-3 py-1 bg-gray-100 text-brand-blue text-xs rounded-full font-medium"
                     >
-                      {skill}
-                    </span>
-                  ))}
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
