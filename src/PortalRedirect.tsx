@@ -9,24 +9,32 @@ export default function PortalRedirect() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) return;
+    if (loading || !user) return;
 
     const role =
-      (user.user_metadata as any)?.role || localStorage.getItem("loginRole");
+      (user.user_metadata as any)?.role ?? localStorage.getItem("loginRole");
 
-    // Only auto-redirect away from landing/login/callback
+    if (!role) return;
+
     if (
       pathname === "/" ||
       pathname === "/login" ||
       pathname === "/auth/callback"
     ) {
-      if (role === "student") navigate("/student-portal", { replace: true });
-      else if (role === "business")
-        navigate("/business-portal", { replace: true });
-      else if (role === "admin") navigate("/admin-portal", { replace: true });
+      const target =
+        role === "student"
+          ? "/student-portal"
+          : role === "business"
+          ? "/business-portal"
+          : role === "admin"
+          ? "/admin-portal"
+          : null;
+
+      if (target) {
+        navigate(target, { replace: true });
+      }
     }
-  }, [user, loading, pathname, navigate]);
+  }, [user, loading]);
 
   return null;
 }

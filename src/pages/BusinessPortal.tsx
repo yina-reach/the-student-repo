@@ -61,17 +61,11 @@ export default function BusinessPortal() {
   const [loadingFlex, setLoadingFlex] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
-  const [biosSubmissions, setBiosSubmissions] = useState<SubmissionRow[]>([]);
-  const [biosLoading, setBiosLoading] = useState(false);
   const [initialConversationId, setInitialConversationId] = useState<
     string | null
   >(null);
-
   const [shortlist, setShortlist] = useState<StudentProfile[]>([]);
-
   const [searchTerm, setSearchTerm] = useState("");
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-
   const { user } = useAuth();
 
   const toggleShortlist = (student: StudentProfile) => {
@@ -322,130 +316,41 @@ export default function BusinessPortal() {
     loadProjects();
   }, [activeSubtab, sortOrder, searchTerm]);
 
-  useEffect(() => {
-    if (activeSubtab !== "bios") return;
-
-    const loadBios = async () => {
-      setBiosLoading(true);
-      try {
-        const term = searchTerm.trim();
-        let query;
-
-        const selectColumns =
-          "id, first_name, last_name, school, major, graduation_year, side_projects, skills, github, linkedin, type_of_work, relocating, flex";
-        if (term) {
-          // Use RPC for search
-          query = supabase
-            .rpc("search_submissions_ci", { search_term: term })
-            .select(selectColumns);
-        } else {
-          // Default query
-          query = supabase.from("submissions").select(selectColumns);
-        }
-
-        // Apply sorting based on state
-        if (sortOrder === "asc") {
-          query = query.order("last_name", { ascending: true });
-        } else {
-          query = query.order("last_name", { ascending: false });
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error("Error loading bios", error);
-          setBiosSubmissions([]);
-          return;
-        }
-
-        setBiosSubmissions((data as SubmissionRow[]) ?? []);
-      } catch (err) {
-        console.error("Unexpected error loading bios", err);
-      } finally {
-        setBiosLoading(false);
-      }
-    };
-
-    loadBios();
-  }, [activeSubtab, sortOrder, searchTerm]);
-
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans">
       <NavBar activeTab={activeTab} onChangeTab={setActiveTab} />
-
-      {activeTab === "messages" ? (
-        // FULL-SCREEN MESSAGES LAYOUT
-        <main className="flex-1 flex justify-center items-start bg-white pt-8">
-          <MessagesSection
-            initialConversationId={initialConversationId ?? undefined}
-          />
-        </main>
-      ) : (
-        // EXISTING LAYOUT FOR OTHER TABS
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 mt-10">
-          {activeTab === "students" && (
-            <>
-              <div className="flex justify-between">
-                <div className="flex items-center gap-6">
-                  <h1 className="text-xl font-semibold">Students</h1>
-                  <StudentsSubtabs
-                    active={activeSubtab}
-                    setActive={setActiveSubtab}
-                  />
-                </div>
-                <div className="ml-6 flex-1 justify-end">
-                  <div className="relative w-full">
-                    <input
-                      type="text"
-                      placeholder="Search name, school, or skill..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="flex font-sans text-sm items-center w-full px-4 py-1.5 gap-2 text-black rounded-xl border border-gray-300 focus:border-brand-blue hover:bg-brand-blue/5 transition"
+      <div className="mb-8">
+        {activeTab === "messages" ? (
+          // FULL-SCREEN MESSAGES LAYOUT
+          <main className="flex-1 flex justify-center items-start bg-white pt-8">
+            <MessagesSection
+              initialConversationId={initialConversationId ?? undefined}
+            />
+          </main>
+        ) : (
+          // EXISTING LAYOUT FOR OTHER TABS
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 mt-10">
+            {activeTab === "students" && (
+              <>
+                <div className="flex justify-between">
+                  <div className="flex items-center gap-6">
+                    <h1 className="text-xl font-semibold">Students</h1>
+                    <StudentsSubtabs
+                      active={activeSubtab}
+                      setActive={setActiveSubtab}
                     />
-                    <svg
-                      className="w-4 h-4 text-brand-blue absolute right-3 top-1/2 transform -translate-y-1/2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
                   </div>
-                </div>
-              </div>
-              <div className="flex justify-between mt-4">
-                <div className="text-gray-400">
-                  {activeSubtab === "projects"
-                    ? projectsLoading
-                      ? "Loading projects…"
-                      : `${projects.length} ${
-                          projects.length === 1 ? "project" : "projects"
-                        }`
-                    : profilesCount === null
-                    ? "Loading profiles…"
-                    : `${profilesCount} profiles`}
-                </div>
-
-                <div className="flex items-center justify-end gap-4 mb-4">
-                  <div className="relative">
-                    <select
-                      value={sortOrder}
-                      onChange={(e) =>
-                        setSortOrder(e.target.value as "asc" | "desc")
-                      }
-                      className="px-4 py-2 text-sm rounded-lg hover:bg-gray-50 appearance-none pr-8"
-                    >
-                      <option value="asc">Alphabetical</option>
-                      <option value="desc">Recent</option>
-                    </select>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <div className="ml-6 flex-1 justify-end">
+                    <div className="relative w-full">
+                      <input
+                        type="text"
+                        placeholder="Search name, school, or skill..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex font-sans text-sm items-center w-full px-4 py-1.5 gap-2 text-black rounded-xl border border-gray-300 focus:border-brand-blue hover:bg-brand-blue/5 transition"
+                      />
                       <svg
-                        className="w-4 h-4 text-gray-500"
+                        className="w-4 h-4 text-brand-blue absolute right-3 top-1/2 transform -translate-y-1/2"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -454,126 +359,170 @@ export default function BusinessPortal() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                         />
                       </svg>
                     </div>
                   </div>
                 </div>
-              </div>
-              {activeSubtab === "humble" && (
-                <div className="flex items-center justify-center">
-                  {loadingFlex ? (
-                    <p className="text-gray-500 py-10">
-                      Loading humble flex posts...
-                    </p>
-                  ) : humbleFlexSubmissions.length === 0 ? (
-                    <p className="text-gray-500 py-10">
-                      No humble flex posts yet.
-                    </p>
-                  ) : (
-                    <div className="space-y-6">
-                      {humbleFlexSubmissions.map((submission) => {
-                        const authorName = `${submission.first_name} ${submission.last_name}`;
-                        const authorSchool = `${submission.school} '${
-                          submission.graduation_year?.slice(-2) || ""
-                        }`;
-                        const studentId = submission.email;
+                <div className="flex justify-between mt-4">
+                  <div className="text-gray-400">
+                    {activeSubtab === "projects"
+                      ? projectsLoading
+                        ? "Loading projects…"
+                        : `${projects.length} ${
+                            projects.length === 1 ? "project" : "projects"
+                          }`
+                      : profilesCount === null
+                      ? "Loading profiles…"
+                      : `${profilesCount} profiles`}
+                  </div>
 
-                        const studentProfile: StudentProfile = {
-                          id: studentId,
-                          name: authorName,
-                          school: authorSchool,
-                        };
-
-                        return (
-                          <FlexComponent
-                            key={submission.id}
-                            authorName={authorName}
-                            authorSchool={authorSchool}
-                            flexContent={submission.flex}
-                            skills={submission.skills || []}
-                            studentId={studentId}
-                            onStartConversation={handleStartConversation}
-                            isShortlisted={shortlist.some(
-                              (s) => s.id === studentProfile.id
-                            )}
-                            onToggleShortlist={() =>
-                              toggleShortlist(studentProfile)
-                            }
+                  <div className="flex items-center justify-end gap-4 mb-4">
+                    <div className="relative">
+                      <select
+                        value={sortOrder}
+                        onChange={(e) =>
+                          setSortOrder(e.target.value as "asc" | "desc")
+                        }
+                        className="px-4 py-2 text-sm rounded-lg hover:bg-gray-50 appearance-none pr-8"
+                      >
+                        <option value="asc">Alphabetical</option>
+                        <option value="desc">Recent</option>
+                      </select>
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <svg
+                          className="w-4 h-4 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
                           />
-                        );
-                      })}
+                        </svg>
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              )}
-              {activeSubtab === "projects" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 mb-4">
-                  {projectsLoading ? (
-                    <div className="col-span-2 text-center text-gray-400 py-8">
-                      Loading projects...
-                    </div>
-                  ) : projects.length === 0 ? (
-                    <div className="col-span-2 text-center text-gray-400 py-8">
-                      No projects found.
-                    </div>
-                  ) : (
-                    projects.map((project) => (
-                      <ProjectCard
-                        key={project.id}
-                        title={project.title}
-                        description={project.description}
-                        tags={project.tags}
-                        authorName={project.authorName}
-                        authorSchool={project.authorSchool}
-                        projectImage={project.projectImage}
-                        projectUrl={project.projectUrl}
-                        studentId={project.studentId}
+                {activeSubtab === "humble" && (
+                  <div className="flex items-center justify-center">
+                    {loadingFlex ? (
+                      <p className="text-gray-500 py-10">
+                        Loading humble flex posts...
+                      </p>
+                    ) : humbleFlexSubmissions.length === 0 ? (
+                      <p className="text-gray-500 py-10">
+                        No humble flex posts yet.
+                      </p>
+                    ) : (
+                      <div className="space-y-6">
+                        {humbleFlexSubmissions.map((submission) => {
+                          const authorName = `${submission.first_name} ${submission.last_name}`;
+                          const authorSchool = `${submission.school} '${
+                            submission.graduation_year?.slice(-2) || ""
+                          }`;
+                          const studentId = submission.email;
+
+                          const studentProfile: StudentProfile = {
+                            id: studentId,
+                            name: authorName,
+                            school: authorSchool,
+                          };
+
+                          return (
+                            <FlexComponent
+                              key={submission.id}
+                              authorName={authorName}
+                              authorSchool={authorSchool}
+                              flexContent={submission.flex}
+                              skills={submission.skills || []}
+                              studentId={studentId}
+                              onStartConversation={handleStartConversation}
+                              isShortlisted={shortlist.some(
+                                (s) => s.id === studentProfile.id
+                              )}
+                              onToggleShortlist={() =>
+                                toggleShortlist(studentProfile)
+                              }
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {activeSubtab === "projects" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 mb-4">
+                    {projectsLoading ? (
+                      <div className="col-span-2 text-center text-gray-400 py-8">
+                        Loading projects...
+                      </div>
+                    ) : projects.length === 0 ? (
+                      <div className="col-span-2 text-center text-gray-400 py-8">
+                        No projects found.
+                      </div>
+                    ) : (
+                      projects.map((project) => (
+                        <ProjectCard
+                          key={project.id}
+                          title={project.title}
+                          description={project.description}
+                          tags={project.tags}
+                          authorName={project.authorName}
+                          authorSchool={project.authorSchool}
+                          projectImage={project.projectImage}
+                          projectUrl={project.projectUrl}
+                          studentId={project.studentId}
+                          onStartConversation={handleStartConversation}
+                        />
+                      ))
+                    )}
+                  </div>
+                )}
+                {activeSubtab === "bios" && (
+                  <BiosSection
+                    searchTerm={searchTerm}
+                    onStartConversation={handleStartConversation}
+                  />
+                )}
+              </>
+            )}
+
+            {activeTab === "shortlist" && (
+              <div>
+                <h1 className="text-xl font-semibold mb-4">Shortlist</h1>
+
+                {shortlist.length === 0 ? (
+                  <p className="text-sm text-gray-500">
+                    You haven&apos;t shortlisted any students yet. Click the
+                    flag icon on a student profile to save it here.
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {shortlist.map((student) => (
+                      <FlexComponent
+                        key={student.id}
+                        authorName={student.name}
+                        authorSchool={student.school}
+                        studentId={student.id}
                         onStartConversation={handleStartConversation}
+                        isShortlisted={shortlist.some(
+                          (s) => s.id === student.id
+                        )}
+                        onToggleShortlist={() => toggleShortlist(student)}
                       />
-                    ))
-                  )}
-                </div>
-              )}
-              {activeSubtab === "bios" && (
-                <BiosSection
-                  searchTerm={searchTerm}
-                  onStartConversation={handleStartConversation}
-                />
-              )}
-            </>
-          )}
-
-          {activeTab === "shortlist" && (
-            <div>
-              <h1 className="text-xl font-semibold mb-4">Shortlist</h1>
-
-              {shortlist.length === 0 ? (
-                <p className="text-sm text-gray-500">
-                  You haven&apos;t shortlisted any students yet. Click the flag
-                  icon on a student profile to save it here.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {shortlist.map((student) => (
-                    <FlexComponent
-                      key={student.id}
-                      authorName={student.name}
-                      authorSchool={student.school}
-                      studentId={student.id}
-                      onStartConversation={handleStartConversation}
-                      isShortlisted={shortlist.some((s) => s.id === student.id)}
-                      onToggleShortlist={() => toggleShortlist(student)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </main>
-      )}
-
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </main>
+        )}
+      </div>
       <Footer />
     </div>
   );
